@@ -1,6 +1,7 @@
 package org.example.expert.domain.comment.service;
 
 import org.example.expert.domain.comment.dto.request.CommentSaveRequest;
+import org.example.expert.domain.comment.dto.response.CommentResponse;
 import org.example.expert.domain.comment.dto.response.CommentSaveResponse;
 import org.example.expert.domain.comment.entity.Comment;
 import org.example.expert.domain.comment.repository.CommentRepository;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -69,5 +71,26 @@ class CommentServiceTest {
 
         // then
         assertNotNull(result);
+    }
+
+    @Test
+    public void comment_List_조회_정상작동(){
+        //given
+        long todoId = 1L;
+        CommentSaveRequest request = new CommentSaveRequest("contents");
+        AuthUser authUser = new AuthUser(1L, "email", UserRole.USER);
+        User user = User.fromAuthUser(authUser);
+        Todo todo = new Todo("title", "title", "contents", user);
+        Comment comment = new Comment(request.getContents(), user, todo);
+        List<Comment> commentList = List.of(comment);
+
+        given(commentRepository.findByTodoIdWithUser(anyLong())).willReturn(commentList);
+        //when
+        List<CommentResponse> result = commentService.getComments(todoId);
+        //then
+        assertNotNull(result);
+        assertEquals(1,result.size());
+        assertEquals(comment.getId(),result.get(0).getId());
+        assertEquals(comment.getContents(),result.get(0).getContents());
     }
 }
