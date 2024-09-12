@@ -73,7 +73,7 @@ public class TodoServiceTest {
 //    }
 
     @Test
-    public void Todo_페이지_레파지토리에서_뽑아오기(){
+    public void Todo_페이지_정상작동하는지_보기(){
         //given
         int page = 1;
         int size = 10;
@@ -84,15 +84,7 @@ public class TodoServiceTest {
 
         given(todoRepository.findAllByOrderByModifiedAtDesc(any(Pageable.class))).willReturn(todoss);
         //when
-        Page<TodoResponse> result = todoService.getTodos(page,size).map(a->new TodoResponse(
-                a.getId(),
-                a.getTitle(),
-                a.getContents(),
-                a.getWeather(),
-                new UserResponse(a.getUser().getId(), a.getUser().getEmail()),
-                a.getCreatedAt(),
-                a.getModifiedAt()
-        ));
+        Page<TodoResponse> result = todoService.getTodos(page,size);
         //then
         assertNotNull(result);
     }
@@ -109,6 +101,10 @@ public class TodoServiceTest {
         assertEquals("Todo not found",exception.getMessage());
     }
 
+    @Test
+    public void Todo_단건조회_정상작동_확인 () {
+
+    }
 
 
 }
