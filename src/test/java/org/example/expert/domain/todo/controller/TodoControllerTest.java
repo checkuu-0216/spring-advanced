@@ -1,6 +1,7 @@
 package org.example.expert.domain.todo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.expert.domain.comment.dto.response.CommentResponse;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.common.entity.Timestamped;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
@@ -25,7 +26,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -97,4 +101,20 @@ public class TodoControllerTest extends Timestamped {
 //                .contentType(MediaType.APPLICATION_JSON))
 //                .andExpect(status().isOk());
 //    }
+
+    @Test
+    public void 할일_단건_조회()  throws Exception {
+        //given
+        AuthUser authUser = new AuthUser(1L, "aaa@aa.com", UserRole.USER);
+        User user = User.fromAuthUser(authUser);
+        UserResponse userResponse = new UserResponse(user.getId(), user.getEmail());
+        TodoResponse todoResponse = new TodoResponse(1L,"title","contents","sunny",userResponse,LocalDateTime.now(),LocalDateTime.now());
+        long todoId = 1L;
+        given(todoService.getTodo(todoId)).willReturn(todoResponse);
+        //when then
+        mockMvc.perform(get("/todos/{todoId}",1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk());
+    }
 }
